@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Books API with API Key</title>
+</head>
+<body>
+<h1>Google Books API with API Key</h1>
+<input type="text" id="searchInput" placeholder="Enter search query">
+<button onclick="searchBooks()">Search</button>
+<div id="results"></div>
+
+<script>
+    const apiKey = 'YOUR KEY';
+
+    function searchBooks() {
+        var searchQuery = document.getElementById('searchInput').value;
+
+        fetch(`https://www.googleapis.com/books/v1/volumes?q=${searchQuery}&key=${apiKey}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('results').innerHTML = '';
+
+                data.items.forEach(book => {
+                    var title = book.volumeInfo.title;
+                    var authors = book.volumeInfo.authors ? book.volumeInfo.authors.join(', ') : 'Unknown';
+                    var description = book.volumeInfo.description ? book.volumeInfo.description : 'No description available';
+                    var thumbnail = book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.thumbnail : 'https://via.placeholder.com/128x192.png?text=No+Image';
+
+                    var bookDiv = document.createElement('div');
+                    bookDiv.innerHTML = `
+              <h2>${title}</h2>
+              <p><strong>Authors:</strong> ${authors}</p>
+              <img src="${thumbnail}" alt="${title} cover">
+              <p>${description}</p>
+              <hr>
+            `;
+                    document.getElementById('results').appendChild(bookDiv);
+                });
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    }
+</script>
+</body>
+</html>
